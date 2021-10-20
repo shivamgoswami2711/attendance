@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 export const Data = {
     address:"http://192.168.2.7:3000", 
 }
-
 export const colorThame = {
     Primary: '#00BFFF',
     secondary: '#00BFFF',
@@ -29,11 +28,9 @@ export const UserData = async () => {
   };
 
 export const RemoveData = async () => {
-    try {
-      const value = await AsyncStorage.removeItem('user');
-      console.log(value)
-      console.log("hello")
-    } catch (error) {
-        alert(error)
-    }
-  };
+  try {
+    const value = await AsyncStorage.removeItem('user');
+  } catch (error) {
+      alert(error)
+  }
+};

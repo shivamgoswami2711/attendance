@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext,useEffect } from 'react'
 import {
     StyleSheet,
     Text,
@@ -8,38 +8,32 @@ import {
     TextInput,
     TouchableOpacity,
 } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import ImageRef from '../assets'
 import { useNavigation } from '@react-navigation/native';
-import { ValidateEmail } from '../Module';
-import axios from 'axios'
-import { Data } from '../Data';
-
+import { AuthContext } from '../component/context';
 const Login = () => {
+    // navigation
     const navigation = useNavigation();
+
+    // variabel
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const LoginSubmit = async () => {
-        if (email.length == 0) alert("Places Enter Email")
-        else if (!ValidateEmail(email)) alert("Email not correct")
-        else if (password.length == 0) alert("Places Enter password")
-        else {
-            await axios.post(`${Data.address}/login`, { email, password })
-                .then(async(res) => {
-                    setEmail('')
-                    setPassword('')
-                    try {
-                        await AsyncStorage.setItem("user",JSON.stringify(res.data));
-                      } catch (error) {
-                        alert(error)
-                      }
-                    alert("Login Success")
-                    navigation.navigate('Home')
-                }).catch(e => {
-                    alert("Login Fail")
-                })
-        }
+
+    // Context func
+    const { logIn, data } = useContext(AuthContext)
+
+    const formSubmit =()=>{
+        const data = logIn(email, password).then(data=>{
+ console.log(data)
+        })
+       
     }
+    // useEffect(() => {
+    //     if (data().userToken !== null){
+    //         navigation.navigate("Home")
+    //     }
+    // }, [])
+
     return (
         <View style={styles.mainCaontainer}>
             <View style={styles.ImageContainer}>
@@ -69,7 +63,7 @@ const Login = () => {
                 </View>
             </View>
             <View style={styles.SubmitButonContainer}>
-                <Button style={styles.SubmitButon} onPress={() => LoginSubmit()} title="Login" />
+                <Button style={styles.SubmitButon} onPress={() => formSubmit()} title="Login" />
             </View>
             <View style={styles.forgetContainer}>
                 <TouchableOpacity>
@@ -128,3 +122,7 @@ const styles = StyleSheet.create({
         marginVertical: 20
     }
 })
+
+
+
+

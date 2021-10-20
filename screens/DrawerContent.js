@@ -1,18 +1,20 @@
-import React from 'react'
-import { View, StyleSheet } from 'react-native'
+import React,{useContext} from 'react';
+import { View, StyleSheet } from 'react-native';
 import {
     DrawerContentScrollView,
     DrawerItem
-} from '@react-navigation/drawer'
+} from '@react-navigation/drawer';
 import {
     Avatar,
     Caption,
     Drawer,
     Title,
-} from "react-native-paper"
+} from "react-native-paper";
+import { AuthContext } from '../component/context';
 
 
 export default function DrawerContent(props) {
+    const {logOut} = useContext(AuthContext)
 
     return (
         <View style={{ flex: 1, padding: 10 }}>
@@ -61,7 +63,7 @@ export default function DrawerContent(props) {
             <Drawer.Section style={styles.DrawerBottomSection}>
                 <DrawerItem
                     label="Log Out"
-                    onPress={() => { }}>
+                    onPress={() => {logOut() }}>
                 </DrawerItem>
             </Drawer.Section>
         </View>
