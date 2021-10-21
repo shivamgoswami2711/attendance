@@ -1,10 +1,23 @@
-import React from 'react'
+import React, { useEffect} from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
 import ImageRef from '../assets'
-
+import { UserData } from '../Data';
+import { useStateValue } from '../component/context';
 
 
 const Home = () => {
+    const [State, dispatch] = useStateValue();
+    useEffect(() => {
+        UserData().then(data => {
+            if (typeof data !== 'undefined') {
+                dispatch({
+                    type: 'login',
+                    userName: data.name,
+                    userToken: data.id
+                })
+            }
+        })
+    }, [])
     return (
         <View>
             <View style={styles.CardContainer} >
@@ -47,7 +60,7 @@ const styles = StyleSheet.create({
         width: 300,
         height: 100,
         margin: 10,
-        borderWidth:1,
-        
+        borderWidth: 1,
+
     }
 })

@@ -1,4 +1,4 @@
-import React, { useState, useContext,useEffect } from 'react'
+import React, { useState,useEffect } from 'react'
 import {
     StyleSheet,
     Text,
@@ -10,23 +10,51 @@ import {
 } from 'react-native'
 import ImageRef from '../assets'
 import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../component/context';
+import { useStateValue } from '../component/context';
+
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ValidateEmail } from '../Module';
+import axios from 'axios'
+import { Data } from '../Data';
+
 const Login = () => {
     // navigation
     const navigation = useNavigation();
+    const [State, dispatch] = useStateValue()
+
+    useEffect(() => {
+        if(typeof State !== 'undefined'? State.userToken !== null:false){
+        navigation.navigate("Home")
+    }
+    }, [State])
+    
 
     // variabel
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    // Context func
-    const { logIn, data } = useContext(AuthContext)
-
-    const formSubmit =()=>{
-        const data = logIn(email, password).then(data=>{
- console.log(data)
-        })
-       
+    const formSubmit = async () => {
+        if (email.length == 0) alert("Places Enter Email")
+        else if (!ValidateEmail(email)) alert("Email not correct")
+        else if (password.length == 0) alert("Places Enter password")
+        else {
+            await axios.post(`${Data.address}/login`, { email, password })
+                .then(async (res) => {
+                    try {
+                        await AsyncStorage.setItem("user", JSON.stringify(res.data));
+                    } catch (error) {
+                        alert(error)
+                    }
+                    alert("Login Successfully")
+                    dispatch({
+                        type: 'login',
+                        userName: res.data.name,
+                        userToken: res.data.id
+                    })
+                }).catch(e => {
+                    alert("Login Fail")
+                })
+        }
     }
     // useEffect(() => {
     //     if (data().userToken !== null){

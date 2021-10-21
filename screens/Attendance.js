@@ -34,17 +34,17 @@ const UserAttendance = () => {
     const numColumns = 7;
     const weakName = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-    useEffect(() => {
-        UserData().then(res => {
+    useEffect( () => {
+            UserData().then(res => {
             if (typeof res !== 'undefined') {
                 setUser(res)
                 console.log("login")
+                getAttendance()
             } else {
                 navigation.navigate("Home");
             }
-            getAttendance()
+          
         })
-        console.log(User !== null)
     }, [])
 
 
@@ -115,13 +115,12 @@ const UserAttendance = () => {
 
     const onChangeEntry = async (event, selectedDate) => {
         setEntryShow(false)
-        const currentDate = selectedDate || timeEntry;
-        setTimeEntry(currentDate);
-        setSelectedEntryTime(currentDate.toLocaleTimeString());
+        setTimeEntry(selectedDate);
+        setSelectedEntryTime(selectedDate.toLocaleTimeString());
         const data = {
             id: User !== null ? User.id : '',
             date: new Date().toLocaleDateString(),
-            entry: selectedEntryTime,
+            entry: selectedDate.toLocaleTimeString()
         }
         await axios.post(`${Data.address}/attendance/entry`, data).then(res => {
             getAttendance()
@@ -132,13 +131,12 @@ const UserAttendance = () => {
     };
     const onChangeExit = async (event, selectedDate) => {
         setExitShow(false)
-        const currentDate = selectedDate || timeExit;
-        setTimeExit(currentDate);
-        setSelectedExitTime(currentDate.toLocaleTimeString());
+        setTimeExit(selectedDate);
+        setSelectedExitTime(selectedDate.toLocaleTimeString());
         const data = {
             id: User !== null ? User.id : '',
             date: new Date().toLocaleDateString(),
-            exit: selectedExitTime
+            exit: selectedDate.toLocaleTimeString()
         }
         await axios.post(`${Data.address}/attendance/exit`, data).then(res => {
             getAttendance()
@@ -205,7 +203,7 @@ const UserAttendance = () => {
                         mode='time'
                         is24Hour={true}
                         display="spinner"
-                        onChange={onChangeEntry}
+                        onChange={(event, selectedDate)=>onChangeEntry(event, selectedDate)}
                         is24Hour={false}
                     />)}
                     {ExitShow && (<DateTimePicker
@@ -214,7 +212,7 @@ const UserAttendance = () => {
                         mode='time'
                         is24Hour={true}
                         display="spinner"
-                        onChange={onChangeExit}
+                        onChange={(event, selectedDate)=>onChangeExit(event, selectedDate)}
                         is24Hour={false}
                     />)}
                 </View>

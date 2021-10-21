@@ -1,4 +1,4 @@
-import React, { useMemo, useReducer } from 'react';
+import React, { useEffect, useReducer, useState} from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import Attendance from './screens/Attendance'
@@ -8,15 +8,12 @@ import Login from "./screens/login"
 import Home from "./screens/Home"
 import { AuthContext } from './component/context';
 import DrawerContent from './screens/DrawerContent';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { ValidateEmail } from './Module';
-import axios from 'axios'
-import { Data } from './Data';
 
 const Drawer = createDrawerNavigator();
 
 export default function App() {
-  // #############################
+
+
   // init
   // #############################
 
@@ -24,7 +21,6 @@ export default function App() {
     userName: null,
     userToken: null,
   }
-  // #############################
   // reducer
   // #############################
 
@@ -42,88 +38,16 @@ export default function App() {
           userName: null,
           userToken: null
         }
-      case 'Data':
-        return {...prevState}
+      case 'loginChack':
+        return {
+          ...prevState
+        }
       default:
         break;
     }
   }
-
-
-  const [loginState, dispatch] = useReducer(loginReducer, initialState)
-
-  // #############################
-  //  All func
-  // #############################
-
-  const authfunc = useMemo(() => ({
-
-    // #############################
-    // login Func
-    // #############################
-
-
-    logIn: async (email, password) => {
-      let success = null
-      if (email.length == 0) alert("Places Enter Email")
-      else if (!ValidateEmail(email)) alert("Email not correct")
-      else if (password.length == 0) alert("Places Enter password")
-      else {
-        await axios.post(`${Data.address}/login`, { email, password })
-          .then(async (res) => {
-            try {
-              await AsyncStorage.setItem("user", JSON.stringify(res.data));
-            } catch (error) {
-              alert(error)
-            }
-            alert("Login Successfully")
-            dispatch({
-              type: 'login',
-              userName: res.data.name,
-              userToken: res.data.id
-            })
-            success = {
-              userName: res.data.name,
-              userToken: res.data.id
-            }
-          }).catch(e => {
-            alert("Login Fail")
-            success={
-              userName: null,
-              userToken: null
-            }
-          })
-      }
-      return loginState
-    },
-
-    // #############################
-    // logout Func
-    // #############################
-
-    logOut: async () => {
-      try {
-        const value = await AsyncStorage.removeItem('user');
-        dispatch({
-          type: 'logout'
-        })
-      } catch (error) {
-        alert(error)
-      }
-    },
-    data:()=>{
-      dispatch({
-        type:'data'
-      })
-      return loginState
-    }
-     
-  }), [])
-
-
-
   return (
-    <AuthContext.Provider value={authfunc}>
+    <AuthContext.Provider value={useReducer(loginReducer, initialState)}>
       <NavigationContainer>
         <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
           <Drawer.Screen name="Home" component={Home} />
